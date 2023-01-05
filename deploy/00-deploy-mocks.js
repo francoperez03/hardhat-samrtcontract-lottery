@@ -7,7 +7,6 @@ module.exports = async function ({ getnamedAccounts, deployments }) {
     const { deploy, log } = deployments
     const { deployer } = await getNamedAccounts(deploy)
     const chainId = network.config.chainId
-    console.log({ network })
     if (developmentChains.includes(network.name)) {
         log('Local network detected! Deploying mocks...')
         await deploy('VRFCoordinatorV2Mock', {
@@ -20,4 +19,4 @@ module.exports = async function ({ getnamedAccounts, deployments }) {
     }
 }
 
-module.exports.tag = ['all', 'mocks']
+module.exports.tags = ['all', 'mocks']
