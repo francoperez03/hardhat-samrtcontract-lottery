@@ -16,7 +16,7 @@ module.exports = async function ({ getNamedAccounts, deployments }) {
         subscriptionId = transactionReceipt.events[0].args.subId
         //Fund the subscription with
         //Usually, you'd need the link token on a real network
-        await vrfCoordinatorV2Mock.fundSubscription(subscriptionId, VRF_SUB_FUN_AMOUNT)
+        await vrfCoordinatorV2Mock.fundSubscription(subscriptionId.toNumber(), VRF_SUB_FUN_AMOUNT)
     } else {
         vrfCoordinatorV2Address = networkConfig[chainId]['vrfCoordinatorV2']
         subscriptionId = networkConfig[chainId]['subscriptionId']
@@ -41,7 +41,12 @@ module.exports = async function ({ getNamedAccounts, deployments }) {
         log: true,
         awitConfirmations: network.config.blockConfirmations || 1,
     })
-
+    if (developmentChains.includes(network.name)) {
+        const vrfCoordinatorV2Mock = await ethers.getContract('VRFCoordinatorV2Mock')
+        await vrfCoordinatorV2Mock.addConsumer(subscriptionId.toNumber(), raffle.address)
+        log('adding consumer...')
+        log('Consumer added!')
+    }
     if (!developmentChains.includes(network.name) && process.env.ETHERSCAN_API_KEY) {
         log('...Verifying')
         await verify(raffle.address, args)
